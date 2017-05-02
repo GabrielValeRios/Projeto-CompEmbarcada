@@ -165,11 +165,11 @@ int main(void){
   /* Configura Leds */
   LED_init(1);
   
-	/* Configura os botões */
-	BUT_init();  
+  /* Configura os botões */
+  BUT_init();  
   
-	/* Configura USART0 para comunicacao com o HM-10 */
-	USART0_init();
+  /* Configura USART0 para comunicacao com o HM-10 */
+  USART0_init();
   
   /* Inicializa funcao de delay */
   delay_init( sysclk_get_cpu_hz());
@@ -205,31 +205,31 @@ int main(void){
   rtn = mcu6050_i2c_bus_write(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_ACCEL_CONFIG, bufferTX, 1);
   rangePerDigit = 0.000061f ; // 2G       
  
-	while (1) {
-    sprintf(bufferTX, "%s \n", "REPS!");
-    printf("REPS!\n");
-    usart_putString(bufferTX);
-    usart_getString(bufferRX);
+  while (1) {
+	sprintf(bufferTX, "%s \n", "REPS!");
+	printf("REPS!\n");
+	usart_putString(bufferTX);
+	usart_getString(bufferRX);
 	// Le valor do acc X High e Low
-    rtn = mcu6050_i2c_bus_read(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_ACCEL_XOUT_H, &accXHigh, 1);
-    rtn = mcu6050_i2c_bus_read(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_ACCEL_XOUT_L, &accXLow,  1);
+	rtn = mcu6050_i2c_bus_read(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_ACCEL_XOUT_H, &accXHigh, 1);
+	rtn = mcu6050_i2c_bus_read(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_ACCEL_XOUT_L, &accXLow,  1);
    
-    // Le valor do acc y High e  Low
-    rtn = mcu6050_i2c_bus_read(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_ACCEL_YOUT_H, &accYHigh, 1);
-    rtn = mcu6050_i2c_bus_read(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_ACCEL_ZOUT_L, &accYLow,  1);
+	// Le valor do acc y High e  Low
+	rtn = mcu6050_i2c_bus_read(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_ACCEL_YOUT_H, &accYHigh, 1);
+	rtn = mcu6050_i2c_bus_read(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_ACCEL_ZOUT_L, &accYLow,  1);
     
-    // Le valor do acc z HIGH e Low
-    rtn = mcu6050_i2c_bus_read(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_ACCEL_ZOUT_H, &accZHigh, 1);
-    rtn = mcu6050_i2c_bus_read(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_ACCEL_ZOUT_L, &accZLow,  1);
+	// Le valor do acc z HIGH e Low
+	rtn = mcu6050_i2c_bus_read(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_ACCEL_ZOUT_H, &accZHigh, 1);
+	rtn = mcu6050_i2c_bus_read(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_ACCEL_ZOUT_L, &accZLow,  1);
      
-    // Dados são do tipo complemento de dois
-    accX = (accXHigh << 8) | (accXLow << 0);
-    accY = (accYHigh << 8) | (accYLow << 0);
-    accZ = (accZHigh << 8) | (accZLow << 0);
+	// Dados são do tipo complemento de dois
+	accX = (accXHigh << 8) | (accXLow << 0);
+	accY = (accYHigh << 8) | (accYLow << 0);
+	accZ = (accZHigh << 8) | (accZLow << 0);
    
-    printf("x/y/z : %d / %d / %d \n", accX, accY, accZ);
+	printf("x/y/z : %d / %d / %d \n", accX, accY, accZ);
    
-    pin_toggle(LED_PIO, LED_PIN_MASK);
-    delay_ms(300);
+	pin_toggle(LED_PIO, LED_PIN_MASK);
+	delay_ms(300);
 	}
 }
