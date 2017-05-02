@@ -31,7 +31,7 @@
  * inclui o head do mcu6050
  */
 #include "mcu6050.h"
-
+#include "asf.h"
 /*	
  *  \Brief: The function is used as I2C bus init
  */

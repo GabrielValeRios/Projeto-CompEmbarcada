@@ -9,7 +9,8 @@
  * inclui o head do bluetooth
  */
 #include "bluetooth.h"
- #include "asf.h"
+#include "asf.h"
+
 /**
  * \brief Configure UART console.
  */
@@ -39,7 +40,7 @@ static void USART0_init(void){
 	usart_enable_tx(USART0);
 	usart_enable_rx(USART0);
  }
- 
+
  /**
  *  Envia para o UART uma string
  */
@@ -53,6 +54,7 @@ uint32_t usart_putString(uint8_t *pstring){
      
   return(i);
 }
+
 
 /*
  * Busca do UART uma string

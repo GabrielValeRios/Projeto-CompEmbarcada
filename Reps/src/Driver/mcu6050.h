@@ -45,18 +45,7 @@ THE SOFTWARE.
 // supporting link:  http://forum.arduino.cc/index.php?&topic=143444.msg1079517#msg1079517
 // also: http://forum.arduino.cc/index.php?&topic=141571.msg1062899#msg1062899s
 
-/**
- * @brief STDINT possui as definições dos tipos de variáveis
- * e constantes
- */
-#include <stdint.h>
-
-#include "twihs"
-
-/**
- * @brief Inclui as definições prévias do uc em uso
- */
-#include <same70.h>
+#include "asf.h"
 
 #define MPU6050_ADDRESS_AD0_LOW     0x68 // address pin low (GND), default for InvenSense evaluation board
 #define MPU6050_ADDRESS_AD0_HIGH    0x69 // address pin high (VCC)
@@ -462,5 +451,7 @@ int8_t mcu6050_i2c_bus_write(uint8_t dev_addr, uint8_t reg_addr, uint8_t *reg_da
  *	\param cnt : The no of byte of data to be read
  */
 int8_t mcu6050_i2c_bus_read(uint8_t dev_addr, uint8_t reg_addr, uint8_t *reg_data, uint8_t cnt);
+
+
 
 #endif /* MCU6050._H_ */

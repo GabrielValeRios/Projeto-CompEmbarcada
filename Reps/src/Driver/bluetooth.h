@@ -1,13 +1,13 @@
 /**
  * @file bluetooth.h
- * @author Gabriel Rios e Gabriela Almeida
+ * @author Rafael Corsi Gabriel Rios e Gabriela Almeida
  * @date 26/04/2017
  * @brief Funções para configurar o Bluetooth
  */
 
 #ifndef BLUETOOTH_H
 #define BLUETOOTH_H
-
+#include "asf.h"
 /**
  * @brief STDINT possui as definições dos tipos de variáveis
  * e constantes

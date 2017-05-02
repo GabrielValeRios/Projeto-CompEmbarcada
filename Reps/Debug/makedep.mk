@@ -2,6 +2,14 @@
 # Automatically-generated file. Do not edit or delete the file
 ################################################################################
 
+src\Driver\bluetooth.c
+
+src\Driver\mcu6050.c
+
+src\Driver\pio_insper.c
+
+src\Driver\pmc_insper.c
+
 src\ASF\common\services\clock\same70\sysclk.c
 
 src\ASF\common\services\delay\sam\cycle_counter.c
@@ -42,19 +50,11 @@ src\ASF\sam\drivers\usart\usart.c
 
 src\ASF\sam\drivers\xdmac\xdmac.c
 
-src\Driver\bluetooth.c
+src\ASF\sam\utils\cmsis\same70\source\templates\gcc\startup_same70.c
 
-src\Driver\mcu6050.c
+src\ASF\sam\utils\cmsis\same70\source\templates\system_same70.c
 
-src\Driver\pio_insper.c
-
-src\Driver\pmc_insper.c
-
-src\Driver\utils\cmsis\same70\source\templates\gcc\startup_same70.c
-
-src\Driver\utils\cmsis\same70\source\templates\system_same70.c
-
-src\Driver\utils\syscalls\gcc\syscalls.c
+src\ASF\sam\utils\syscalls\gcc\syscalls.c
 
 src\main.c
 
