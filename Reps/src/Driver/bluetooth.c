@@ -40,6 +40,7 @@
 		usart_enable_tx(USART0);
 		usart_enable_rx(USART0);
  }
+ 
 
  /**
  *  Envia para o UART uma string

@@ -10,6 +10,7 @@
 #include "asf.h"
 #include "Driver/mcu6050.h"
 #include "Driver/bluetooth.h"
+#include "arm_math.h"
 
 /**
  * LEDs
@@ -34,6 +35,12 @@
 #define TWIHS_MCU6050_ID    ID_TWIHS0 
 #define TWIHS_MCU6050       TWIHS0  
 
+/** 
+ *  USART
+ */
+#define USART_COM     USART1
+#define USART_COM_ID  ID_USART1
+
 
 /************************************************************************/
 /* VAR globais                                                          */
@@ -47,6 +54,9 @@ volatile uint8_t flag_led0 = 1;
  int16_t  accX, accY, accZ;
 volatile uint8_t  accXHigh, accYHigh, accZHigh;
 volatile uint8_t  accXLow,  accYLow,  accZLow;
+
+uint8_t bufferRX[100];
+uint8_t bufferTX[100];
 
 /************************************************************************/
 /* PROTOTYPES                                                           */
@@ -67,6 +77,16 @@ static void Button1_Handler(uint32_t id, uint32_t mask)
 {
 	pin_toggle(PIOD, (1<<28));
 	pin_toggle(LED_PIO, LED_PIN_MASK);
+}
+
+void USART1_Handler(void){
+	uint32_t ret = usart_get_status(USART_COM);
+
+	// Verifica por qual motivo entrou na interrupçcao
+	if(ret & US_IER_RXRDY){                     // Dado disponível para leitura
+		usart_getString(bufferRX);
+		} else if(ret & US_IER_TXRDY){              // Transmissão finalizada
+	}
 }
 
 
@@ -147,8 +167,7 @@ static void configure_console(void)
 int main(void){
   
 	/* buffer para recebimento de dados */
-	uint8_t bufferRX[100];
-	uint8_t bufferTX[100];
+
   
 	uint8_t rtn;
 
@@ -203,13 +222,11 @@ int main(void){
 	// Configura range acelerometro para operar com 2G
 	bufferTX[0] = 0x00; // 2G
 	rtn = mcu6050_i2c_bus_write(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_ACCEL_CONFIG, bufferTX, 1);
-	rangePerDigit = 0.000061f ; // 2G       
+	rangePerDigit = 0.000061f ; // 2G 
+	//uint32_t g = rangePerDigit/2;      
  
 	while (1) {
-		sprintf(bufferTX, "%s \n", "REPS!");
-		printf("REPS!\n");
-		usart_putString(bufferTX);
-		usart_getString(bufferRX);
+
 		// Le valor do acc X High e Low
 		rtn = mcu6050_i2c_bus_read(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_ACCEL_XOUT_H, &accXHigh, 1);
 		rtn = mcu6050_i2c_bus_read(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_ACCEL_XOUT_L, &accXLow,  1);
@@ -228,8 +245,14 @@ int main(void){
 		accZ = (accZHigh << 8) | (accZLow << 0);
    
 		printf("x/y/z : %d / %d / %d \n", accX, accY, accZ);
-   
+		
+		uint32_t modulo;
+		modulo = (sqrt(accX^2+accY^2+accZ^2));
 		pin_toggle(LED_PIO, LED_PIN_MASK);
-		delay_ms(300);
+		delay_ms(100);
+		
+		sprintf(bufferTX, "%d \n", modulo);
+		printf("Modulo: %d \n",modulo);
+		usart_putString(bufferTX);
 	}
 }

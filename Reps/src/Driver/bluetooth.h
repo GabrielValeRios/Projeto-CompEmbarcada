@@ -24,6 +24,8 @@
  * \brief Configure UART console.
  */
  void USART0_init(void);
+ 
+
 
 /**
  *  Envia para o UART uma string
