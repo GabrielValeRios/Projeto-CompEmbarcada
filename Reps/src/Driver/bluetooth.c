@@ -14,7 +14,7 @@
 /**
  * \brief Configure UART console.
  */
-static void USART0_init(void){
+ void USART0_init(void){
   
 	/* Configura USART0 Pinos */
 	sysclk_enable_peripheral_clock(ID_PIOB);

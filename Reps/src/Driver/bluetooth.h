@@ -23,7 +23,7 @@
 /**
  * \brief Configure UART console.
  */
-static void USART0_init(void);
+ void USART0_init(void);
 
 /**
  *  Envia para o UART uma string
