@@ -41,6 +41,8 @@
 #define USART_COM     USART1
 #define USART_COM_ID  ID_USART1
 
+#define FREQ		1
+
 
 /************************************************************************/
 /* VAR globais                                                          */
@@ -57,13 +59,14 @@ volatile uint8_t  accXLow,  accYLow,  accZLow;
 
 uint8_t bufferRX[100];
 uint8_t bufferTX[100];
-
+uint8_t rtn;
 /************************************************************************/
 /* PROTOTYPES                                                           */
 /************************************************************************/
 
 void BUT_init(void);
 void LED_init(int estado);
+void TC1_init(void);
 void pin_toggle(Pio *pio, uint32_t mask);
 
 /************************************************************************/
@@ -87,6 +90,38 @@ void USART1_Handler(void){
 		usart_getString(bufferRX);
 		} else if(ret & US_IER_TXRDY){              // Transmissão finalizada
 	}
+}
+
+void TC1_Handler(void){
+	// Le valor do acc X High e Low
+	rtn = mcu6050_i2c_bus_read(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_ACCEL_XOUT_H, &accXHigh, 1);
+	rtn = mcu6050_i2c_bus_read(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_ACCEL_XOUT_L, &accXLow,  1);
+		
+	// Le valor do acc y High e  Low
+	rtn = mcu6050_i2c_bus_read(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_ACCEL_YOUT_H, &accYHigh, 1);
+	rtn = mcu6050_i2c_bus_read(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_ACCEL_ZOUT_L, &accYLow,  1);
+		
+	// Le valor do acc z HIGH e Low
+	rtn = mcu6050_i2c_bus_read(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_ACCEL_ZOUT_H, &accZHigh, 1);
+	rtn = mcu6050_i2c_bus_read(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_ACCEL_ZOUT_L, &accZLow,  1);
+		
+	// Dados são do tipo complemento de dois
+	accX = (accXHigh << 8) | (accXLow << 0);
+	accY = (accYHigh << 8) | (accYLow << 0);
+	accZ = (accZHigh << 8) | (accZLow << 0);
+		
+	printf("x/y/z : %d / %d / %d \n", accX, accY, accZ);
+		
+	uint32_t modulo;
+	printf("#%d \n",modulo);
+	modulo = (sqrt(accX^2+accY^2+accZ^2));
+	pin_toggle(LED_PIO, LED_PIN_MASK);
+	//delay_ms(100);
+		
+	sprintf(bufferTX, "%d \n", modulo);
+	printf("Modulo: %d \n",modulo);
+	usart_putString(bufferTX);
+
 }
 
 
@@ -131,6 +166,27 @@ void LED_init(int estado){
 	pio_set_output(LED_PIO, LED_PIN_MASK, estado, 0, 0 );
 };
 
+void TC1_init(void){
+	uint32_t ul_div;
+	uint32_t ul_tcclks;
+	uint32_t ul_sysclk = sysclk_get_cpu_hz();
+	
+	/* Configura o PMC */
+	pmc_enable_periph_clk(ID_TC1);
+
+	/** Configura o TC para operar em  4Mhz e interrupçcão no RC compare */
+	tc_find_mck_divisor(FREQ, ul_sysclk, &ul_div, &ul_tcclks, ul_sysclk);
+	tc_init(TC0, 1, ul_tcclks | TC_CMR_CPCTRG);
+	tc_write_rc(TC0, 1, (ul_sysclk / ul_div) / FREQ);
+
+	/* Configura e ativa interrupçcão no TC canal 0 */
+	NVIC_EnableIRQ((IRQn_Type) ID_TC1);
+	tc_enable_interrupt(TC0, 1, TC_IER_CPCS);
+
+	/* Inicializa o canal 0 do TC */
+	tc_start(TC0, 1);
+}
+
 /**
  * \brief Configure UART console.
  * BaudRate : 115200
@@ -169,7 +225,7 @@ int main(void){
 	/* buffer para recebimento de dados */
 
   
-	uint8_t rtn;
+	
 
 	/* Initialize the SAM system */
 	sysclk_init();
@@ -223,36 +279,11 @@ int main(void){
 	bufferTX[0] = 0x00; // 2G
 	rtn = mcu6050_i2c_bus_write(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_ACCEL_CONFIG, bufferTX, 1);
 	rangePerDigit = 0.000061f ; // 2G 
-	//uint32_t g = rangePerDigit/2;      
+	//uint32_t g = rangePerDigit/2;  
+	
+	TC1_init();    
  
 	while (1) {
 
-		// Le valor do acc X High e Low
-		rtn = mcu6050_i2c_bus_read(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_ACCEL_XOUT_H, &accXHigh, 1);
-		rtn = mcu6050_i2c_bus_read(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_ACCEL_XOUT_L, &accXLow,  1);
-   
-		// Le valor do acc y High e  Low
-		rtn = mcu6050_i2c_bus_read(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_ACCEL_YOUT_H, &accYHigh, 1);
-		rtn = mcu6050_i2c_bus_read(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_ACCEL_ZOUT_L, &accYLow,  1);
-    
-		// Le valor do acc z HIGH e Low
-		rtn = mcu6050_i2c_bus_read(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_ACCEL_ZOUT_H, &accZHigh, 1);
-		rtn = mcu6050_i2c_bus_read(MPU6050_DEFAULT_ADDRESS, MPU6050_RA_ACCEL_ZOUT_L, &accZLow,  1);
-     
-		// Dados são do tipo complemento de dois
-		accX = (accXHigh << 8) | (accXLow << 0);
-		accY = (accYHigh << 8) | (accYLow << 0);
-		accZ = (accZHigh << 8) | (accZLow << 0);
-   
-		printf("x/y/z : %d / %d / %d \n", accX, accY, accZ);
-		
-		uint32_t modulo;
-		modulo = (sqrt(accX^2+accY^2+accZ^2));
-		pin_toggle(LED_PIO, LED_PIN_MASK);
-		delay_ms(100);
-		
-		sprintf(bufferTX, "%d \n", modulo);
-		printf("Modulo: %d \n",modulo);
-		usart_putString(bufferTX);
 	}
 }
