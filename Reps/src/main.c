@@ -54,6 +54,7 @@ float rangePerDigit ; // 2G
 volatile uint8_t flag_led0 = 1;
 
  int16_t  accX, accY, accZ;
+ float new_accX, new_accY, new_accZ;
 volatile uint8_t  accXHigh, accYHigh, accZHigh;
 volatile uint8_t  accXLow,  accYLow,  accZLow;
 
@@ -109,17 +110,21 @@ void TC1_Handler(void){
 	accX = (accXHigh << 8) | (accXLow << 0);
 	accY = (accYHigh << 8) | (accYLow << 0);
 	accZ = (accZHigh << 8) | (accZLow << 0);
+	
+	new_accX = (((float) (accX^2)) * 0.000061f);
+	new_accY = (((float) (accY^2)) * 0.000061f);
+	new_accZ = (((float) (accZ^2)) * 0.000061f);
 		
-	printf("x/y/z : %d / %d / %d \n", accX, accY, accZ);
+	printf("x/y/z : %d / %d / %d \n", ((int)new_accX), ((int)new_accY), ((int) new_accZ));
 		
-	uint32_t modulo;
-	printf("#%d \n",modulo);
-	modulo = (sqrt(accX^2+accY^2+accZ^2));
+	float modulo;
+	modulo = (sqrt(new_accX+new_accY+new_accZ));
+	printf("%d \n",((int)modulo));
 	pin_toggle(LED_PIO, LED_PIN_MASK);
 	//delay_ms(100);
 		
 	sprintf(bufferTX, "%d \n", modulo);
-	printf("Modulo: %d \n",modulo);
+	
 	usart_putString(bufferTX);
 
 }
