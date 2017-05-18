@@ -15,45 +15,25 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="10dp">
-    <LinearLayout android:orientation="horizontal"
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp">
-        <TextView android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/label_device_address"
-            android:textSize="18sp"/>
-        <Space android:layout_width="5dp"
-            android:layout_height="wrap_content"/>
-        <TextView android:id="@+id/device_address"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="18sp"/>
+        android:layout_height="150sp">
+
     </LinearLayout>
+
+
+
     <LinearLayout android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp">
         <TextView android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/label_state"
+            android:id="@+id/label_data"
             android:textSize="18sp"/>
-        <Space android:layout_width="5dp"
-            android:layout_height="wrap_content"/>
-        <TextView android:id="@+id/connection_state"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/disconnected"
-            android:textSize="18sp"/>
-    </LinearLayout>
-    <LinearLayout android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp">
-        <TextView android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/label_data"
-            android:textSize="18sp"/>
+        <!--android:text="@string/label_data"-->
+
         <Space android:layout_width="5dp"
             android:layout_height="wrap_content"/>
 
@@ -62,53 +42,103 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/no_data"
-            android:textSize="18sp" />
+            android:gravity="center"
+            android:textSize="30sp" />
 
     </LinearLayout>
+    <Button
+        android:id="@+id/button_read"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="buttonOnClick"
+        android:text="Button" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="150sp">
+
+    </LinearLayout>
+    <LinearLayout android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp">
+        <TextView android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/label_device_address"
+            android:textSize="13sp"/>
+        <Space android:layout_width="5dp"
+            android:layout_height="wrap_content"/>
+        <TextView android:id="@+id/device_address"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="13sp"/>
+
+
+
+    </LinearLayout>
+    <LinearLayout android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp">
+        <TextView android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/label_state"
+            android:textSize="13sp"/>
+        <Space android:layout_width="5dp"
+            android:layout_height="wrap_content"/>
+        <TextView android:id="@+id/connection_state"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/disconnected"
+            android:textSize="13sp"/>
+    </LinearLayout>
+
     <TextView
         android:id="@+id/isSerial"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="is_serial"
-        android:textSize="18sp"/>
+        android:layout_height="wrap_content"></TextView>
+        <!--android:text="is_serial"-->
+        <!--android:textSize="18sp"/>-->
 
-    <TextView
-        android:id="@+id/textView1"
-        android:text="red_slide"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall" />
+    <!--<TextView-->
+        <!--android:id="@+id/textView1"-->
+        <!--android:text="red_slide"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:textAppearance="?android:attr/textAppearanceSmall" />-->
 
-    <SeekBar
-        android:id="@+id/seekRed"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:max="255"
-        />
+    <!--<SeekBar-->
+        <!--android:id="@+id/seekRed"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:max="255"-->
+        <!--/>-->
 
-    <TextView
-        android:id="@+id/textView2"
-        android:text="green_slide"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall" />
+    <!--<TextView-->
+        <!--android:id="@+id/textView2"-->
+        <!--android:text="green_slide"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:textAppearance="?android:attr/textAppearanceSmall" />-->
 
-    <SeekBar
-        android:id="@+id/seekGreen"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:max="255" />
+    <!--<SeekBar-->
+        <!--android:id="@+id/seekGreen"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:max="255" />-->
 
-    <TextView
-        android:id="@+id/textView3"
-        android:text="blue_slide"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall" />
+    <!--<TextView-->
+        <!--android:id="@+id/textView3"-->
+        <!--android:text="blue_slide"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:textAppearance="?android:attr/textAppearanceSmall" />-->
 
-    <SeekBar
-        android:id="@+id/seekBlue"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:max="255" />
+    <!--<SeekBar-->
+        <!--android:id="@+id/seekBlue"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:max="255" />-->
+
+
 </LinearLayout>
