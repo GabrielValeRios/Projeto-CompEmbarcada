@@ -41,4 +41,3 @@ public class SampleGattAttributes {
         return name == null ? defaultName : name;
     }
 }
-

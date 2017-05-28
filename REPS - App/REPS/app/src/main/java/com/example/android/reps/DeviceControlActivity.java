@@ -14,11 +14,13 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import android.widget.SeekBar;
@@ -34,18 +36,22 @@ public class DeviceControlActivity extends Activity {
 
     public static final String EXTRAS_DEVICE_NAME = "DEVICE_NAME";
     public static final String EXTRAS_DEVICE_ADDRESS = "DEVICE_ADDRESS";
-    private int[] RGBFrame = {0,0,0};
     private TextView isSerial;
     private TextView mConnectionState;
     private TextView mDataField;
-    private SeekBar mRed,mGreen,mBlue;
     private String mDeviceName;
     private String mDeviceAddress;
-    //  private ExpandableListView mGattServicesList;
     private BluetoothLeService mBluetoothLeService;
     private boolean mConnected = false;
-    private BluetoothGattCharacteristic characteristicTX;
     private BluetoothGattCharacteristic characteristicRX;
+    List<String> accRep4 = new ArrayList<String>();
+    HashMap<String, List<List<String>>> exercise_data = new HashMap<String, List<List<String>>>();
+    int repeticoes_certas = 0;
+    int repeticoes_erradas = 0;
+    int primeiro = 1;
+
+    private int rep = 0;
+
 
 
     public final static UUID HM_RX_TX =
@@ -122,13 +128,6 @@ public class DeviceControlActivity extends Activity {
         isSerial = (TextView) findViewById(R.id.isSerial);
 
         mDataField = (TextView) findViewById(R.id.data_value);
-//        mRed = (SeekBar) findViewById(R.id.seekRed);
-//        mGreen = (SeekBar) findViewById(R.id.seekGreen);
-//        mBlue = (SeekBar) findViewById(R.id.seekBlue);
-//
-//        readSeek(mRed,0);
-//        readSeek(mGreen,1);
-//        readSeek(mBlue,2);
 
         getActionBar().setTitle(mDeviceName);
         getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -197,15 +196,342 @@ public class DeviceControlActivity extends Activity {
         });
     }
 
-    public void buttonOnClick(View view){
-        makeChange();
+    public void buttonOnClickTrue(View view){
+        List<String> accBuffer = new ArrayList<String>();
+        if(mConnected) {
+            mBluetoothLeService.setCharacteristicNotification(characteristicRX,true);
+        }
     }
 
-    private void displayData(String data) {
-
-        if (data != null) {
-            mDataField.setText(data);
+    public void buttonOnClickTrue2(View view){
+        if(mConnected) {
+            mBluetoothLeService.setCharacteristicNotification(characteristicRX,true);
         }
+    }
+
+    public void buttonOnClickFalse(View view){
+        if(mConnected) {
+            mDataField.setText("");
+            mBluetoothLeService.setCharacteristicNotification(characteristicRX,false);
+        }
+        dataCenter(accBuffer);
+    }
+
+    public void buttonOnClickFalse2(View view){
+        if(mConnected) {
+            mDataField.setText("");
+            mBluetoothLeService.setCharacteristicNotification(characteristicRX, false);
+        }
+        Log.d("Repeticoes Validas: ", String.valueOf(repeticoes_certas));
+        Log.d("Repeticoes Invalidas: ", String.valueOf(repeticoes_erradas));
+    }
+
+    List<String> accBuffer = new ArrayList<String>();
+    private void displayData(String data) {
+        if (rep == 0){
+            if (data != null) {
+                mDataField.setText(data);
+                accBuffer.add(data);
+            }
+        }
+        else{
+            if (data != null) {
+                mDataField.setText(data);
+                accRep4.add(data);
+                checkIfMov(accRep4);
+            }
+        }
+    }
+
+    private void dataCenter(List<String> accBuffer){
+        int count_0 = 0;
+        int count_r= 0;
+        String zero = "0 \n";
+        int anterior_zero = 1;
+        String ponto;
+        List<String> accRep = new ArrayList<String>();
+        List<String> accRep1 = new ArrayList<String>();
+        List<String> accRep2 = new ArrayList<String>();
+        List<String> accRep3 = new ArrayList<String>();
+        List<List<String>> data = new ArrayList<>();
+
+
+
+        for (int i =0; i <accBuffer.size(); i++){
+            ponto= accBuffer.get(i);
+            Log.d("accBuffer:", String.valueOf(accBuffer.get(i)));
+            if (ponto.equals(zero)){
+                count_0 +=1;
+            }
+            else{
+                count_0 = 0;
+                accRep.add(ponto);
+                anterior_zero = 1;
+            }
+            if (count_0 > 6 && anterior_zero !=0){
+                accRep.add("0");
+                count_0 = 0;
+                anterior_zero = 0;
+            }
+
+        }
+        rep = 1;
+        for (int i =0; i <accRep.size(); i++){
+            ponto= accRep.get(i);
+            Log.d("accRep:", String.valueOf(accRep.get(i)));
+            if (ponto.equals("0")){
+                count_r +=1;
+            }
+            else{
+                if(count_r<=2){
+                    accRep1.add(ponto);
+                }
+                else{
+                    if(count_r<=4){
+                        accRep2.add(ponto);
+                    }
+                    else{
+                        if(count_r<=6){
+                            accRep3.add(ponto);
+                        }
+                    }
+                }
+            }
+        }
+
+
+
+
+        for (int i=0; i<accRep1.size();i++){
+            Log.d("accRep1:", String.valueOf(accRep1.get(i)));
+        }
+        Log.d("sizeRep1",String.valueOf(accRep1.size()));
+
+        data.add(accRep1);
+
+        for (int i=0; i<accRep2.size();i++){
+            Log.d("accRep2:", String.valueOf(accRep2.get(i)));
+        }
+        Log.d("sizeRep2",String.valueOf(accRep2.size()));
+
+        data.add(accRep2);
+
+        for (int i=0; i<accRep3.size();i++){
+            Log.d("accRep3:", String.valueOf(accRep3.get(i)));
+        }
+        Log.d("sizeRep3",String.valueOf(accRep3.size()));
+
+        data.add(accRep3);
+
+        exercise_data.put("LegPress", data);
+
+    }
+
+    private void checkIfMov(List<String> accRep4){
+        String ponto;
+        String zero = "0 \n";
+        int anterior_zero = 0;
+        int count_0 =0;
+        List<String> accRep = new ArrayList<String>();
+        int count_r = 0;
+
+        for (int i =0; i <accRep4.size(); i++){
+            ponto= accRep4.get(i);
+            if (ponto.equals(zero)){
+            count_0 +=1;
+        }
+        else{
+            count_0 = 0;
+            accRep.add(ponto);
+//            Log.d("counter",String.valueOf(count_0));
+            anterior_zero = 1;
+        }
+        if (count_0 > 10 && anterior_zero !=0){
+            accRep.add("0");
+            count_0 = 0;
+            anterior_zero = 0;
+        }
+    }
+
+        for(int i =0; i <accRep.size(); i++){
+        ponto= accRep.get(i);
+        Log.d("accRep:", String.valueOf(accRep.get(i)));
+        if (ponto.equals("0")){
+            count_r +=1;
+        }
+        else{
+            if(primeiro == 1){
+                if(count_r ==3){
+                    processData(accRep);
+                    accRep.clear();
+                    accRep4.clear();
+                }
+                primeiro = 0;
+            }
+            else{
+                if(count_r == 2){
+                    processData(accRep);
+                    accRep.clear();
+                    accRep4.clear();
+                }
+            }
+        }
+    }
+    }
+    private void processData(List<String> accRep4){
+        String ponto;
+        String zero = "0 \n";
+        int count_0 = 0;
+        List<List<String>> data = new ArrayList<>();
+        List<String> accRep = new ArrayList<String>();
+        int anterior_zero = 1
+                ;
+        for (int i =0; i <accRep4.size(); i++){
+            ponto= accRep4.get(i);
+            if (ponto.equals(zero)){
+                count_0 +=1;
+            }
+            else{
+                count_0 = 0;
+                accRep.add(ponto);
+                anterior_zero = 1;
+            }
+            if (count_0 > 10 && anterior_zero !=0){
+                count_0 = 0;
+                anterior_zero = 0;
+            }
+
+        }
+
+        data= exercise_data.get("LegPress");
+        int data1_size = data.get(0).size();
+        int data2_size = data.get(1).size();
+        int data3_size = data.get(2).size();
+        int menor = accRep.size();
+        int menor_p;
+        int maior_p;
+        int ponto1;
+        int ponto2;
+        int ponto3;
+        int ponto_a;
+        double extremo_max;
+        double extremo_min;
+        int pontos_invalidos=0;
+        int valido = 1;
+
+        Log.d("len ponto", String.valueOf(menor));
+        Log.d("len ponto1", String.valueOf(data1_size));
+        Log.d("len ponto2", String.valueOf(data2_size));
+        Log.d("len ponto3", String.valueOf(data3_size));
+
+        if(menor > data1_size || menor > data2_size || menor > data3_size){
+            menor = return_menor(data1_size, data2_size, data3_size);
+        }
+        Log.d("MENOR", String.valueOf(menor));
+
+        for (int i = 0; i<menor; i++){
+
+            ponto1 = str_to_int(data.get(0).get(i));
+            ponto2 = str_to_int(data.get(1).get(i));
+            ponto3 = str_to_int(data.get(2).get(i));
+            ponto_a = str_to_int(accRep.get(i));
+
+            maior_p = return_maior(ponto1, ponto2, ponto3);
+            menor_p = return_menor(ponto1, ponto2, ponto3);
+            Log.d("CALCULAR EXTREMOS","");
+
+            extremo_max = maior_p + maior_p * 0.35;
+            extremo_min = menor_p - maior_p * 0.35;
+
+            Log.d("extremo max", String.valueOf(extremo_max));
+            Log.d("extremo min", String.valueOf(extremo_min));
+            Log.d("ponto_a", String.valueOf(ponto_a));
+
+            if(ponto_a > extremo_max || ponto_a < extremo_min){
+                pontos_invalidos+=1;
+            }
+            if(pontos_invalidos > 3){
+                valido = 0;
+            }
+        }
+        Log.d("validade: ", String.valueOf(valido));
+        if(valido==1){
+            repeticoes_certas+=1;
+        }
+        else{
+            repeticoes_erradas+=1;
+        }
+
+    }
+
+    public int return_maior(int a, int b, int c) {
+        int maior;
+        if (a > b) {
+            maior = a;
+        } else {
+            maior = b;
+        }
+        if (maior < c) {
+            maior = c;
+        }
+        return maior;
+    }
+
+    public int return_menor(int a, int b, int c) {
+        int menor;
+        if (a < b) {
+            menor = a;
+        } else {
+            menor = b;
+        }
+        if (menor > c) {
+            menor = c;
+        }
+        return menor;
+    }
+
+    public int str_to_int(String num){
+        String[] parts = num.split("");
+        StringBuilder number = new StringBuilder();
+
+
+        for (int i=0; i<parts.length; i++){
+            switch(parts[i]){
+                case "0":
+                    number.append("0");
+                    break;
+                case "1":
+                    number.append("1");
+                    break;
+                case "2":
+                    number.append("2");
+                    break;
+                case "3":
+                    number.append("3");
+                    break;
+                case "4":
+                    number.append("4");
+                    break;
+                case "5":
+                    number.append("5");
+                    break;
+                case "6":
+                    number.append("6");
+                    break;
+                case "7":
+                    number.append("7");
+                    break;
+                case "8":
+                    number.append("8");
+                    break;
+                case "9":
+                    number.append("9");
+                    break;
+            }
+        }
+        String N = number.toString();
+        int numero = Integer.parseInt(N);
+        return numero;
     }
 
 
@@ -227,12 +553,10 @@ public class DeviceControlActivity extends Activity {
                     LIST_NAME, SampleGattAttributes.lookup(uuid, unknownServiceString));
 
             // If the service exists for HM 10 Serial, say so.
-            //if(SampleGattAttributes.lookup(uuid, unknownServiceString) == "HM 10 Serial") { isSerial.setText("Yes, serial :-)"); } else {  isSerial.setText("No, serial :-("); }
             currentServiceData.put(LIST_UUID, uuid);
             gattServiceData.add(currentServiceData);
 
             // get characteristic when UUID matches RX/TX UUID
-            characteristicTX = gattService.getCharacteristic(BluetoothLeService.UUID_HM_RX_TX);
             characteristicRX = gattService.getCharacteristic(BluetoothLeService.UUID_HM_RX_TX);
         }
 
@@ -245,38 +569,6 @@ public class DeviceControlActivity extends Activity {
         intentFilter.addAction(BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED);
         intentFilter.addAction(BluetoothLeService.ACTION_DATA_AVAILABLE);
         return intentFilter;
-    }
-
-//    private void readSeek(SeekBar seekBar,final int pos) {
-//        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){
-//            @Override
-//            public void onProgressChanged(SeekBar seekBar, int progress,
-//                                          boolean fromUser) {
-//                RGBFrame[pos]=progress;
-//            }
-//
-//            @Override
-//            public void onStartTrackingTouch(SeekBar seekBar) {
-//                // TODO Auto-generated method stub
-//            }
-//
-//            @Override
-//            public void onStopTrackingTouch(SeekBar seekBar) {
-//                // TODO Auto-generated method stub
-//                makeChange();
-//            }
-//        });
-//    }
-    // on change of bars write char
-    private void makeChange() {
-//        String str = RGBFrame[0] + "," + RGBFrame[1] + "," + RGBFrame[2] + "\n";
-//        Log.d(TAG, "Sending result=" + str);
-//        final byte[] tx = str.getBytes();
-        if(mConnected) {
-//            characteristicTX.setValue(tx);
-//            mBluetoothLeService.writeCharacteristic(characteristicTX);
-            mBluetoothLeService.setCharacteristicNotification(characteristicRX,true);
-        }
     }
 
 }
