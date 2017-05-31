@@ -44,6 +44,8 @@
             </intent-filter>
         </activity>
         <activity android:name="com.example.android.reps.DeviceControlActivity"/>
+        <activity android:name=".Main" />
+
         <service android:name="com.example.android.reps.BluetoothLeService" android:enabled="true"/>
     </application>
 

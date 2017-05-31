@@ -1,5 +1,4 @@
 package com.example.android.reps;
-import android.media.MediaPlayer;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothGattCharacteristic;
@@ -16,24 +15,18 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
-import android.widget.SeekBar;
-
 /**
- * For a given BLE device, this Activity provides the user interface to connect, display data,
- * and display GATT services and characteristics supported by the device.  The Activity
- * communicates with {@code BluetoothLeService}, which in turn interacts with the
- * Bluetooth LE API.
+ * Created by gabrielaalmeida on 31/05/17.
  */
-public class DeviceControlActivity extends Activity {
+
+public class LearExercise extends Activity {
     private final static String TAG = DeviceControlActivity.class.getSimpleName();
 
     public static final String EXTRAS_DEVICE_NAME = "DEVICE_NAME";
@@ -118,7 +111,7 @@ public class DeviceControlActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.gatt_services_characteristics);
+        setContentView(R.layout.learn_exercise);
 
         final Intent intent = getIntent();
         mDeviceName = intent.getStringExtra(EXTRAS_DEVICE_NAME);
@@ -131,8 +124,6 @@ public class DeviceControlActivity extends Activity {
         isSerial = (TextView) findViewById(R.id.isSerial);
 
         mDataField = (TextView) findViewById(R.id.data_value);
-
-        counter = (TextView) findViewById(R.id.counting);
 
         getActionBar().setTitle(mDeviceName);
         getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -343,45 +334,45 @@ public class DeviceControlActivity extends Activity {
         for (int i =0; i <accRep4.size(); i++){
             ponto= accRep4.get(i);
             if (ponto.equals(zero)){
-            count_0 +=1;
-        }
-        else{
-            count_0 = 0;
-            accRep.add(ponto);
-//            Log.d("counter",String.valueOf(count_0));
-            anterior_zero = 1;
-        }
-        if (count_0 > 10 && anterior_zero !=0){
-            accRep.add("0");
-            count_0 = 0;
-            anterior_zero = 0;
-        }
-    }
-
-        for(int i =0; i <accRep.size(); i++){
-        ponto= accRep.get(i);
-        Log.d("accRep:", String.valueOf(accRep.get(i)));
-        if (ponto.equals("0")){
-            count_r +=1;
-        }
-        else{
-            if(primeiro == 1){
-                if(count_r ==3){
-                    processData(accRep);
-                    accRep.clear();
-                    accRep4.clear();
-                }
-                primeiro = 0;
+                count_0 +=1;
             }
             else{
-                if(count_r == 2){
-                    processData(accRep);
-                    accRep.clear();
-                    accRep4.clear();
+                count_0 = 0;
+                accRep.add(ponto);
+//            Log.d("counter",String.valueOf(count_0));
+                anterior_zero = 1;
+            }
+            if (count_0 > 10 && anterior_zero !=0){
+                accRep.add("0");
+                count_0 = 0;
+                anterior_zero = 0;
+            }
+        }
+
+        for(int i =0; i <accRep.size(); i++){
+            ponto= accRep.get(i);
+            Log.d("accRep:", String.valueOf(accRep.get(i)));
+            if (ponto.equals("0")){
+                count_r +=1;
+            }
+            else{
+                if(primeiro == 1){
+                    if(count_r ==3){
+                        processData(accRep);
+                        accRep.clear();
+                        accRep4.clear();
+                    }
+                    primeiro = 0;
+                }
+                else{
+                    if(count_r == 2){
+                        processData(accRep);
+                        accRep.clear();
+                        accRep4.clear();
+                    }
                 }
             }
         }
-    }
     }
     private void processData(List<String> accRep4){
         String ponto;
@@ -429,57 +420,45 @@ public class DeviceControlActivity extends Activity {
         Log.d("len ponto2", String.valueOf(data2_size));
         Log.d("len ponto3", String.valueOf(data3_size));
 
-
-
-        double p = return_menor(data1_size,data2_size,data3_size);
-        if(menor< p - (p*0.35)){
-            valido = 0;
+        if(menor > data1_size || menor > data2_size || menor > data3_size){
+            menor = return_menor(data1_size, data2_size, data3_size);
         }
+        Log.d("MENOR", String.valueOf(menor));
 
-        else{
-            if(menor > data1_size || menor > data2_size || menor > data3_size){
-                menor = return_menor(data1_size, data2_size, data3_size);
+        for (int i = 0; i<menor; i++){
+
+            ponto1 = str_to_int(data.get(0).get(i));
+            ponto2 = str_to_int(data.get(1).get(i));
+            ponto3 = str_to_int(data.get(2).get(i));
+            ponto_a = str_to_int(accRep.get(i));
+
+            maior_p = return_maior(ponto1, ponto2, ponto3);
+            menor_p = return_menor(ponto1, ponto2, ponto3);
+            Log.d("CALCULAR EXTREMOS","");
+
+            extremo_max = maior_p + maior_p * 0.35;
+            extremo_min = menor_p - maior_p * 0.35;
+
+            Log.d("extremo max", String.valueOf(extremo_max));
+            Log.d("extremo min", String.valueOf(extremo_min));
+            Log.d("ponto_a", String.valueOf(ponto_a));
+
+            if(ponto_a > extremo_max || ponto_a < extremo_min){
+                pontos_invalidos+=1;
             }
-            Log.d("MENOR", String.valueOf(menor));
-
-            for (int i = 0; i<menor; i++){
-
-                ponto1 = str_to_int(data.get(0).get(i));
-                ponto2 = str_to_int(data.get(1).get(i));
-                ponto3 = str_to_int(data.get(2).get(i));
-                ponto_a = str_to_int(accRep.get(i));
-
-                maior_p = return_maior(ponto1, ponto2, ponto3);
-                menor_p = return_menor(ponto1, ponto2, ponto3);
-                Log.d("CALCULAR EXTREMOS","");
-
-                extremo_max = maior_p + maior_p * 0.35;
-                extremo_min = menor_p - maior_p * 0.35;
-
-                Log.d("extremo max", String.valueOf(extremo_max));
-                Log.d("extremo min", String.valueOf(extremo_min));
-                Log.d("ponto_a", String.valueOf(ponto_a));
-
-                if(ponto_a > extremo_max || ponto_a < extremo_min){
-                    pontos_invalidos+=1;
-                }
-                if(pontos_invalidos > 3){
-                    valido = 0;
-                }
+            if(pontos_invalidos > 3){
+                valido = 0;
             }
-
         }
-
-
         Log.d("validade: ", String.valueOf(valido));
         if(valido==1){
             repeticoes_certas+=1;
-            counter.setText(String.valueOf(repeticoes_certas));
+
         }
         else{
             repeticoes_erradas+=1;
         }
-
+        counter.setText(repeticoes_certas);
 
     }
 
@@ -591,4 +570,3 @@ public class DeviceControlActivity extends Activity {
     }
 
 }
-
